@@ -12,5 +12,10 @@ set softtabstop=4
 set termguicolors
 set nocompatible
 set hlsearch
+
+call plug#begin('~/.vim/plugged')
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+call plug#end()
+
 colorscheme catppuccin_macchiato
 
