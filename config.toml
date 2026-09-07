@@ -1,4 +1,15 @@
-[keys]
+  [keys]
   prefix = "ctrl+a"
   split_vertical = "prefix+|"
   new_tab = "prefix+c"
+  
+  # 오른쪽 탭 바에 현재 상태를 표시한다. hostname/datetime은 Herdr 서버 기준이다.
+  [ui]
+  tab_bar_right = [
+    { type = "zoom" },
+   { type = "command", command = 'dir=$PWD; case "$dir" in "$HOME"/*) dir="~/${dir#"$HOME"/}";; esac; printf "dir: %s\\n" "$dir"', interval_seconds = 3     },
+   { type = "command", command = 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then branch=$(git branch --show-current 2>/dev/null); [ -n "$b    ranch" ] || branch=$(git rev-parse --short HEAD 2>/dev/null); if [ -n "$(git status --porcelain 2>/dev/null)" ]; then dirty="*"; else dirty=""; fi; pri    ntf "git: %s%s\\n" "$branch" "$dirty"; fi', interval_seconds = 3 },
+   { type = "hostname" },
+   { type = "datetime", format = "%Y-%m-%d %H:%M" },
+ ]
+ tab_bar_right_separator = "  |  "
