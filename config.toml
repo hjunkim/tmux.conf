@@ -1,15 +1,26 @@
-  [keys]
-  prefix = "ctrl+a"
-  split_vertical = "prefix+|"
-  new_tab = "prefix+c"
-  
-  # 오른쪽 탭 바에 현재 상태를 표시한다. hostname/datetime은 Herdr 서버 기준이다.
-  [ui]
-  tab_bar_right = [
-    { type = "zoom" },
-   { type = "command", command = 'dir=$PWD; case "$dir" in "$HOME"/*) dir="~/${dir#"$HOME"/}";; esac; printf "dir: %s\\n" "$dir"', interval_seconds = 3     },
-   { type = "command", command = 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then branch=$(git branch --show-current 2>/dev/null); [ -n "$b    ranch" ] || branch=$(git rev-parse --short HEAD 2>/dev/null); if [ -n "$(git status --porcelain 2>/dev/null)" ]; then dirty="*"; else dirty=""; fi; pri    ntf "git: %s%s\\n" "$branch" "$dirty"; fi', interval_seconds = 3 },
-   { type = "hostname" },
-   { type = "datetime", format = "%Y-%m-%d %H:%M" },
- ]
- tab_bar_right_separator = "  |  "
+[keys]
+prefix = "ctrl+a"
+split_vertical = "prefix+|"
+new_tab = "prefix+c"
+
+# 오른쪽 탭 바에 현재 상태를 표시한다. hostname/datetime은 Herdr 서버 기준이다.
+[ui]
+tab_bar_position = "top"
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "command", command = "\"$HERDR_BIN_PATH\" agent list | jq -r --arg pane \"$HERDR_ACTIVE_PANE_ID\" '.result.agents[] | select(.pane_id == $pane) | if .name then \"\\(.agent): \\(.name)\" else \"\\(.agent): \\(.terminal_title_stripped // .terminal_title // \\\"\\\")\" end'", interval_seconds = 3 },
+  { type = "command", command = "\"$HERDR_BIN_PATH\" pane process-info --pane \"$HERDR_ACTIVE_PANE_ID\" 2>/dev/null | jq -r '[.result.process_info.foreground_processes[]? | select(.name==\"vim\" or .name==\"nvim\" or .name==\"vi\" or .name==\"view\")] | (.[0].argv // [])[1:] | map(select(test(\"^[-+]\")|not)) | if length>0 then \"vim: \" + (last | split(\"/\") | last) else empty end'", interval_seconds = 2 },
+  { type = "command", command = 'dir=$PWD; case "$dir" in "$HOME"/*) dir="~/${dir#"$HOME"/}";; esac; printf "dir: %s\\n" "$dir"', interval_seconds = 3 },
+  { type = "command", command = 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then branch=$(git branch --show-current 2>/dev/null); [ -n "$branch" ] || branch=$(git rev-parse --short HEAD 2>/dev/null); if [ -n "$(git status --porcelain 2>/dev/null)" ]; then dirty="*"; else dirty=""; fi; printf "git: %s%s\\n" "$branch" "$dirty"; fi', interval_seconds = 3 },
+  { type = "datetime", format = "%Y-%m-%d %H:%M" },
+]
+tab_bar_right_separator = "  |  "
+
+status_indicators = "symbols"
+show_agent_labels_on_pane_borders = true
+[theme]
+name = "gruvbox"
+auto_switch = false
+
+[ui.toast]
+delivery = "herdr"
